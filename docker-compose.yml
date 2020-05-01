@@ -1,0 +1,101 @@
+version: '3'
+
+networks:
+  services:
+    ipam:
+      config:
+        - subnet: 173.17.0.0/24
+
+services:
+  #
+  # Pool
+  #
+  pool:
+    build:
+      context: .
+      dockerfile: indy-pool.dockerfile
+      args:
+        - pool_ip=173.17.0.100
+    ports:
+      - 9701-9708:9701-9708
+    networks:
+      services:
+        ipv4_address: 173.17.0.100
+
+  
+  # Agents
+  
+  tesla:
+    image: indy-agentjs
+    build:
+      context: .
+    command: "bash -c 'node --inspect=0.0.0.0 ./bin/www'"
+    #    command: "bash -c 'npm start'"
+    environment:
+    - PORT=3000
+    - NAME=Tesla
+    - EMAIL=issuer@Tesla.com
+    - PASSWORD=123
+    - USERNAME=tesla
+    - PUBLIC_DID_ENDPOINT=173.17.0.99:3000
+    - DOCKERHOST=${DOCKERHOST}
+    - RUST_LOG=${RUST_LOG}
+    - TEST_POOL_IP=${TEST_POOL_IP}
+    ports:
+    - 3000:3000
+    - 9220:9229
+    depends_on:
+    - pool
+    networks:
+      services:
+        ipv4_address: 173.17.0.99
+
+  requester-vehicle:
+    image: indy-agentjs
+    command: "bash -c 'node --inspect=0.0.0.0 ./bin/www'"
+    #    command: "bash -c 'npm start'"
+    environment:
+      - PORT=3001
+      - NAME=Requester-Vehicle
+      - EMAIL=requester-vehicle@tesla.com
+      - PASSWORD=123
+      - USERNAME=requester-vehicle
+      - PUBLIC_DID_ENDPOINT=173.17.0.11:3001
+      - DOCKERHOST=${DOCKERHOST}
+      - RUST_LOG=${RUST_LOG}
+      - TEST_POOL_IP=${TEST_POOL_IP}
+    ports:
+      - 3001:3001
+      - 9221:9229
+    depends_on:
+      - pool
+      - tesla
+    networks:
+      services:
+        ipv4_address: 173.17.0.11
+
+  #
+  #
+  front-vehicle:
+    image: indy-agentjs
+    command: "bash -c 'node --inspect=0.0.0.0 ./bin/www'"
+    #    command: "bash -c 'npm start'"
+    environment:
+      - PORT=3002
+      - NAME=Front-Vehicle
+      - EMAIL=front-vehicle@tesla.com
+      - PASSWORD=123
+      - USERNAME=front-vehicle
+      - PUBLIC_DID_ENDPOINT=173.17.0.22:3002
+      - DOCKERHOST=${DOCKERHOST}
+      - RUST_LOG=${RUST_LOG}
+      - TEST_POOL_IP=${TEST_POOL_IP}
+    ports:
+      - 3002:3002
+      - 9222:9229
+    depends_on:
+      - pool
+      - tesla
+    networks:
+      services:
+        ipv4_address: 173.17.0.22
