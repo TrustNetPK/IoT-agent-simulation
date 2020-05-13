@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title><%=name%></title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -11,7 +12,8 @@
         }
 
         /* Full-width inputs */
-        input[type=text], input[type=password] {
+        input[type=text],
+        input[type=password] {
             width: 100%;
             padding: 12px 20px;
             margin: 8px 0;
@@ -72,19 +74,33 @@
                 display: block;
                 float: none;
             }
+
             .cancelbtn {
                 width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="w3-container w3-card w3-center w3-border" style="margin:150px auto;width: 50%;display: block;">
         <form method="POST" action="/login">
             <div class="imgcontainer">
-                <img src="/images/sovrinIcon.png" width="220px" height="220px" alt="Sovrin Logo" class="">
+                <% if(name === 'Tesla'){ %>
+                <img src="/images/tesla.png" width="220px" height="220px" alt="Tesla Logo" class="">
+                <% } %>
+                <% if(name === 'Requester-Vehicle'){ %>
+                <img src="/images/requester-vehicle.png" width="220px" height="220px" alt="Requester Vehicle Logo"
+                    class="">
+                <% } %>
+                <% if(name === 'Front-Vehicle'){ %>
+                <img src="/images/front-vehicle.png" width="220px" height="220px" alt="Front Vehicle Logo" class="">
+                <% } %>
             </div>
             <span id="loginErrMessage" style="color: red"></span>
+            <div class="container">
+                <h2>Agent: <%=name%></h2>
+            </div>
             <div class="container">
                 <label for="username"><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" name="username" required>
@@ -111,4 +127,5 @@
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 </script>
+
 </html>
